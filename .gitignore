@@ -1,3 +1,4 @@
 __pycache__
 .pid
-src/nohup.out
+log
+nohup.out
