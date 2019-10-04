@@ -23,20 +23,20 @@ def get_entity(text):
     }
     http = urllib3.PoolManager()
     response = http.request(
-      "POST",
-      URL,
-      headers={
-        "Content-Type":"application/json; charset=UTF-8"}, 
-      body = json.dumps(requestJson)
+        "POST",
+        URL,
+        headers={
+            "Content-Type":"application/json; charset=UTF-8"}, 
+        body = json.dumps(requestJson)
     )
 
     data = json.loads(str(response.data, "utf-8"))['return_object']['sentence'][0]['NE']
     print(data)
     ner_data = {}
     for i in range(len(data)):
-    ner = data[i]['type'][:2]
-    text = data[i]['text']
-    ner_data[ner] = text
+        ner = data[i]['type'][:2]
+        text = data[i]['text']
+        ner_data[ner] = text
 
     return ner_data
     # entity = None
