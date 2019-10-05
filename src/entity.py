@@ -1,47 +1,89 @@
-import os, sys, logging, json, urllib3
+import os, sys, logging, json, urllib3, re
 logger = logging.getLogger()
-
 
 URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
 ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
-CODE = "ner"
+
+def chk_keys(data):
+    req_labels = []
+    labels = ['VP', 'LC', 'DT', 'TI', 'NP_OBJ']
+    for label in labels:
+        if not label in data.keys():
+            req_labels.append(label)
+    
+    return req_labels
 
 
-def get_entity(text):
-    """
-    entri api를 이용하여 entity를 조회하고 반환한다.
+def parse_ner(data):
+    ner_data = json.loads(data)['return_object']['sentence'][0]['NE']
+    ner_set = {}
+    
+    for i in range(len(ner_data)):
+        ner = ner_data[i]['type'][:2]
+        text = ner_data[i]['text']
+        ner_set[ner] = text
+    
+    return ner_set
 
-    형태소 분석 : “morp”,
-    어휘의미 분석 (동음이의어 분석) : “wsd”
-    어휘의미 분석 (다의어 분석) : “wsd_poly”
-    개체명 인식 : “ner”
-    의존 구문 분석 : “dparse”
-    의미역 인식 : “srl”
-    """
+
+def parse_dep(data):
+    dep_set = {}
+    dep_data = json.loads(data)['return_object']['sentence'][0]['dependency']
+    vp_ = re.compile('VP.*')
+    for i in range(len(dep_data)):
+        label = dep_data[i]['label']
+        vp = vp_.match(label)
+        if vp or label == 'NP_OBJ':
+            dep_set[label] = dep_data[i]['text']
+    
+    return dep_set
+    
+
+def get_entity(text, code):
+    URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
+    ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
 
     requestJson = {
         "access_key" : ACCESSKEY,
-        "argument" : {
+        'argument' : {
             "text" : text,
-            "analysis_code" : CODE
+            "analysis_code" : code
+            }
         }
-    }
     http = urllib3.PoolManager()
-    logger.info(f"send to etri: {requestJson}")
     response = http.request(
         "POST",
         URL,
-        headers={"Content-Type":"application/json; charset=UTF-8"}, 
+        headers={
+            "Content-Type":"application/json; charset=UTF-8"}, 
         body = json.dumps(requestJson)
-    )
-    logger.info(f"recv from etri: {response.data}")
+        )
+    # 함수로 Data를 다루면 함수 내에서 json.load() 필수
+    data = str(response.data, "utf-8")
+    
+    dep = parse_dep(data)
+    ner = parse_ner(data)
+                                     
+    return dict(dep, **ner)
 
-    morp_data = json.loads(str(response.data, "utf-8"))["return_object"]["sentence"][0]["morp"]
-    ner_data = json.loads(str(response.data, "utf-8"))["return_object"]["sentence"][0]["NE"]
-    logger.warning(f"morp: {morp_data}")
-    logger.warning(f"ner: {ner_data}")
+code = {
+    '0':'morp',     # 형태소 분석
+    '1':'wsd',      # 어휘의미(동음이의어) 분석
+    '2':'wsd_poly', # 어휘의미(다의어) 분석
+    '3':'ner',      # 개체명 인식
+    '4':'dparse',   # 의존 구문 분석
+    '5':'srl'       # 의미역
+}
 
-    return morp_data, ner_data
+'''
+### TEST
+text = "강남구에 9일날 7시에 진행하는 축제 알려줘"
+
+pared_data = get_entity(text, code['4'])
+print(pared_data)
+req_labels = chk_keys(pared_data)
+# print(req_labels)
+'''
 
 
 if __name__ == "__main__":
