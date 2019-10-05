@@ -1,4 +1,5 @@
 import os, sys, logging, json
+from io import StringIO
 from logging import handlers
 logger = logging.getLogger()
 
@@ -31,10 +32,21 @@ def post_telegram():
     chat_id, text = parse_telegram(message)
 
     # entri api를 이용하여 entity를 조회 한다.
-    entity = get_entity(text)
+    morp_data, ner_data = get_entity(text)
+    send_str = StringIO()
+    send_str.write("ner:\n")
+    for ner in ner_data:
+        send_str.write("  - ")
+        send_str.write(str(ner))
+        send_str.write("\n")
+    send_str.write("형태소:\n")
+    for morp in morp_data:
+        send_str.write("  - ")
+        send_str.write(str(morp))
+        send_str.write("\n")
 
     # send_message 함수에 두가지 변수를 전달
-    send_telegram(chat_id, text)
+    send_telegram(chat_id, send_str.getvalue())
 
     # 여기까지 오류가 없으면 서버상태 200 으로 반응
     return Response("Ok", status=200)
