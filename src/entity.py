@@ -39,7 +39,7 @@ def parse_dep(data):
     return dep_set
     
 
-def get_entity(text, code):
+def get_entity(text):
     URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
     ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
 
