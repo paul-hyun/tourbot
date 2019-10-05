@@ -4,7 +4,7 @@ logger = logging.getLogger()
 URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
 ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
 
-def chk_keys(data):
+def chk_entities(data):
     req_labels = []
     labels = ['VP', 'LC', 'DT', 'TI', 'NP_OBJ']
     for label in labels:
@@ -21,7 +21,11 @@ def parse_ner(data):
     for i in range(len(ner_data)):
         ner = ner_data[i]['type'][:2]
         text = ner_data[i]['text']
-        ner_set[ner] = text
+        if ner in ner_set.keys():
+            ner_set[ner].append(text)
+        else:
+            ner_set[ner] = [text]
+        
     
     return ner_set
 
@@ -32,14 +36,18 @@ def parse_dep(data):
     vp_ = re.compile('VP.*')
     for i in range(len(dep_data)):
         label = dep_data[i]['label']
+        text = dep_data[i]['text']
         vp = vp_.match(label)
         if vp or label == 'NP_OBJ':
-            dep_set[label] = dep_data[i]['text']
+            if label in dep_set.keys():
+                dep_set[label].append(text)
+            else:
+                dep_set[label] = [text]
     
     return dep_set
     
 
-def get_entity(text):
+def get_entities(text):
     URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
     ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
 
@@ -60,7 +68,10 @@ def get_entity(text):
         )
     # 함수로 Data를 다루면 함수 내에서 json.load() 필수
     data = str(response.data, "utf-8")
+    #print(data)
     
+    # 같은 label의 값이 여러개 추출될 경우 마지막 update값만 저장되어 수정필요!
+    # 리스트화 해서 저장하는 방법으로 해결
     dep = parse_dep(data)
     ner = parse_ner(data)
                                      
