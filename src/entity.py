@@ -47,7 +47,7 @@ def get_entity(text, code):
         "access_key" : ACCESSKEY,
         'argument' : {
             "text" : text,
-            "analysis_code" : code['4]
+            "analysis_code" : code['4']
             }
         }
     http = urllib3.PoolManager()
