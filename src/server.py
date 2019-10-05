@@ -32,7 +32,7 @@ def post_telegram():
     chat_id, text = parse_telegram(message)
 
     # entri api를 이용하여 entity를 조회 한다.
-    entity = get_entity(text, "ner")
+    entity = get_entity(text, "dparse")
     send_str = StringIO()
     send_str.write(str(entity))
 
