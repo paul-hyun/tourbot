@@ -47,7 +47,7 @@ def parse_dep(data):
     return dep_set
     
 
-def get_entities(text):
+def get_entity(text):
     URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
     ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
 
@@ -86,8 +86,8 @@ code = {
 
 if __name__ == "__main__":
     logger.setLevel(logging.INFO)
-    text = "강남구에 9일날 7시에 진행하는 축제 알려줘"
-    get_entity(text)                               
+    text = "강남구나 성동구에 10월 9일날 7시에 진행하는 축제 알려줘"
+    print(get_entity(text))                            
     # get_entity("영화표 1개 주세요")
     get_entity("주말에 갈 수 있는 관광지좀 알려줘")
 
