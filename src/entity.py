@@ -66,12 +66,9 @@ def get_entities(text):
             "Content-Type":"application/json; charset=UTF-8"}, 
         body = json.dumps(requestJson)
         )
-    # 함수로 Data를 다루면 함수 내에서 json.load() 필수
     data = str(response.data, "utf-8")
     #print(data)
     
-    # 같은 label의 값이 여러개 추출될 경우 마지막 update값만 저장되어 수정필요!
-    # 리스트화 해서 저장하는 방법으로 해결
     dep = parse_dep(data)
     ner = parse_ner(data)
                                      
