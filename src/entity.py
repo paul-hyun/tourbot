@@ -47,7 +47,7 @@ def get_entity(text, code):
         "access_key" : ACCESSKEY,
         'argument' : {
             "text" : text,
-            "analysis_code" : code
+            "analysis_code" : code['4]
             }
         }
     http = urllib3.PoolManager()
@@ -75,20 +75,11 @@ code = {
     '5':'srl'       # 의미역
 }
 
-'''
-### TEST
-text = "강남구에 9일날 7시에 진행하는 축제 알려줘"
-
-pared_data = get_entity(text, code['4'])
-print(pared_data)
-req_labels = chk_keys(pared_data)
-# print(req_labels)
-'''
-
 
 if __name__ == "__main__":
     logger.setLevel(logging.INFO)
-
+    text = "강남구에 9일날 7시에 진행하는 축제 알려줘"
+    get_entity(text)                               
     # get_entity("영화표 1개 주세요")
     get_entity("주말에 갈 수 있는 관광지좀 알려줘")
 
