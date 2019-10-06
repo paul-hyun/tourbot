@@ -3,11 +3,11 @@ from io import StringIO
 from logging import handlers
 logger = logging.getLogger()
 
-from entity import get_entity
+from data_utils import get_entity
 from intent import get_intent
 
 import requests
-from flask import Flask, request, Response
+from flask import Flask, request, Response, render_template, jsonify
 app = Flask(__name__)
 
 
@@ -16,7 +16,7 @@ API_KEY = "962492515:AAHrWqRx5lNl4t1oYGLg21-_ndpXnpG-tC8"
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Welcome Tour Chatbot"
+    return render_template("index.html")
 
 
 @app.route("/telegram", methods=["POST"])
@@ -27,17 +27,15 @@ def post_telegram():
     message = request.get_json()
     logger.warning(f"recv from telegram: {message}")
 
-    # parse_message 함수는 두가지 return 값을 가진다 (chat_id, msg)
+    # parse_message 함수는 두가지 return 값을 가진다 (chat_id, text의)
     # 순서대로 chat_id, text의 변수로 받아준다.
     chat_id, text = parse_telegram(message)
 
-    # entri api를 이용하여 entity를 조회 한다.
-    entity = get_entity(text, "dparse")
-    send_str = StringIO()
-    send_str.write(str(entity))
+    # chatting을 실행한다.
+    client_id, message_id, text = do_chabot(chat_id, None, text)
 
     # send_message 함수에 두가지 변수를 전달
-    send_telegram(chat_id, send_str.getvalue())
+    send_telegram(chat_id, text)
 
     # 여기까지 오류가 없으면 서버상태 200 으로 반응
     return Response("Ok", status=200)
@@ -74,6 +72,53 @@ def send_telegram(chat_id, text):
     return response
 
 
+@app.route("/browser", methods=["POST"])
+def post_browser():
+    """
+    브라우저 입력을 처리하는 함수
+    """
+    message = request.form["input"]
+    logger.warning(f"recv from browser: {message}")
+
+    # chatting을 실행한다.
+    client_id, message_id, text = do_chabot(None, None, message)
+
+    return jsonify({"output": text})
+
+
+def do_chabot(client_id, message_id, text):
+    # entri api를 이용하여 entity를 조회 한다.
+    dep, ner, morp, mecab = get_entity(text)
+    logger.warning(f"recv from etri_dep: {dep}")
+    logger.warning(f"recv from etri_ner: {ner}")
+    logger.warning(f"recv from etri_morp: {morp}")
+    logger.warning(f"recv from etri_mecab: {mecab}")
+
+    send_str = StringIO()
+    data = dict()
+    for elm in dep:
+        data[elm["label"]] = elm["text"]
+    send_str.write(f"dep: {data}")
+    data.clear()
+    for elm in ner:
+        data[elm["type"]] = elm["text"]
+    send_str.write(f"\nner: {data}")
+    data.clear()
+    for elm in morp:
+        data[elm["type"]] = elm["lemma"]
+    send_str.write(f"\nmorp: {data}")
+    data.clear()
+    for elm in mecab:
+        data[elm[1]] = elm[0]
+    send_str.write(f"\nmecab: {data}")
+    data.clear()
+
+    # entity를 이용해 intent 및 entity를 확정 한다.
+    get_intent(dep, ner, morp, mecab)
+
+    return client_id, message_id, send_str.getvalue()
+
+
 if __name__ == "__main__":
     logger.setLevel(logging.INFO)
 
@@ -82,9 +127,11 @@ if __name__ == "__main__":
     log_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)8s | %(message)s"))
     logger.addHandler(log_handler)
 
-    logging.getLogger('werkzeug').setLevel(logging.ERROR)
-    logging.getLogger("urllib3").setLevel(logging.ERROR)
-    logging.getLogger("requests").setLevel(logging.ERROR)
+    logging.getLogger('werkzeug').setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("requests").setLevel(logging.WARNING)
 
+    app.jinja_env.auto_reload = True
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run()
 

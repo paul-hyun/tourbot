@@ -1,6 +1,9 @@
 import os, sys, logging, json, urllib3, re
 logger = logging.getLogger()
 
+import mecab
+mecab = mecab.MeCab()
+
 URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
 ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
 
@@ -15,7 +18,7 @@ def chk_entities(data):
 
 
 def parse_ner(data):
-    ner_data = json.loads(data)['return_object']['sentence'][0]['NE']
+    ner_data = data['return_object']['sentence'][0]['NE']
     ner_set = {}
     
     for i in range(len(ner_data)):
@@ -32,7 +35,7 @@ def parse_ner(data):
 
 def parse_dep(data):
     dep_set = {}
-    dep_data = json.loads(data)['return_object']['sentence'][0]['dependency']
+    dep_data = data['return_object']['sentence'][0]['dependency']
     vp_ = re.compile('VP.*')
     for i in range(len(dep_data)):
         label = dep_data[i]['label']
@@ -66,13 +69,18 @@ def get_entity(text):
             "Content-Type":"application/json; charset=UTF-8"}, 
         body = json.dumps(requestJson)
         )
-    data = str(response.data, "utf-8")
-    #print(data)
+    data = json.loads(response.data.decode("utf-8"))
     
-    dep = parse_dep(data)
-    ner = parse_ner(data)
-                                     
-    return dict(dep, **ner)
+    # dep = parse_dep(data)
+    dep = data["return_object"]["sentence"][0]["dependency"]
+    # ner = parse_ner(data)
+    ner = data["return_object"]["sentence"][0]["NE"]
+    morp = data["return_object"]["sentence"][0]["morp"]
+    mmm = mecab.pos(text)
+    
+    # return dict(dep, **ner)
+    return dep, ner, morp, mmm
+
 
 code = {
     '0':'morp',     # 형태소 분석
