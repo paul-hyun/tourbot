@@ -8,7 +8,14 @@ from intent import get_intent
 
 import requests
 from flask import Flask, request, Response, render_template, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
 app = Flask(__name__)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://tourbot:tourbot123!@localhost/tourbot"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+db = SQLAlchemy(app)
+import database
 
 
 API_KEY = "962492515:AAHrWqRx5lNl4t1oYGLg21-_ndpXnpG-tC8"
@@ -122,16 +129,16 @@ def do_chabot(client_id, message_id, text):
 if __name__ == "__main__":
     logger.setLevel(logging.INFO)
 
-    log_handler = handlers.TimedRotatingFileHandler(filename='../log/tourbot.log', when='midnight', interval=1, encoding='utf-8')
+    log_handler = handlers.TimedRotatingFileHandler(filename="../log/tourbot.log", when="midnight", interval=1, encoding="utf-8")
     log_handler.suffix = "%Y%m%d"
     log_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)8s | %(message)s"))
     logger.addHandler(log_handler)
 
-    logging.getLogger('werkzeug').setLevel(logging.WARNING)
+    logging.getLogger("werkzeug").setLevel(logging.WARNING)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("requests").setLevel(logging.WARNING)
 
     app.jinja_env.auto_reload = True
-    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
     app.run()
 

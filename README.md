@@ -10,5 +10,8 @@ sudo apt-get install build-essential
 - pip install requests
 - pip install urllib3
 - pip install openpyxl
-- pip install python-mecab-ko
 - pip install Jinja2
+- pip install python-mecab-ko
+- pip install PyKomoran
+- pip install PyMySQL
+- pip install flask_sqlalchemy
