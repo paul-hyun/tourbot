@@ -18,5 +18,3 @@ sudo apt-get install mecab mecab-ipadic-utf8
 - pip install flask_sqlalchemy
 - pip install mecab-python3
 
-
-<!-- /home/chatbot/anaconda3/envs/chatbot/lib/mecab/dic/mecab-ko-dic -->
