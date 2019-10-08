@@ -1,9 +1,6 @@
 import os, sys, logging, json, urllib3, re
 logger = logging.getLogger()
 
-import mecab
-mecab = mecab.MeCab()
-
 URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
 ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
 
@@ -76,7 +73,18 @@ def get_entity(text):
     # ner = parse_ner(data)
     ner = data["return_object"]["sentence"][0]["NE"]
     morp = data["return_object"]["sentence"][0]["morp"]
-    mmm = mecab.pos(text)
+
+    response = http.request(
+        "POST",
+        "https://www.officelog.net/mecab",
+        headers={
+            "Content-Type":"application/json; charset=UTF-8"}, 
+        body = json.dumps({"input": text})
+        )
+    mmm = json.loads(response.data.decode("utf-8"))["output"]
+    # mmm = str(json.loads(response.data.decode("utf-8"))["output"])
+    print(mmm)
+    # mmm = []
     
     # return dict(dep, **ner)
     return dep, ner, morp, mmm
