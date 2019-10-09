@@ -21,16 +21,20 @@ def make_output(data):
     ORG_LINK = "http://www.sac.or.kr/SacHome/perform/detail?searchSeq=37337#"
     MAIN_IMG = "http://culture.seoul.go.kr/data/ci/20190927141011.jpg"
 
-    text = {'text': f'{CODENAME}' + '\n' +
-                    f'{TITLE}' + '\n' +
-                    f'{DATE}' + '\n' +
-                    f'{PLACE}' + '\n' +
-                    f'{ORG_NAME}' + '\n' +
-                    f'{USE_TRGT}' + '\n' +
-                    f'{USE_FEE}' + '\n' +
-                    f'{PROGRAM}' + '\n' +
-                    f'<a href="{ORG_LINK}">사이트</a>' + '\n' +
-                    f'<a href="{MAIN_IMG}">Download</a>'}
+    # text = {'text': f'<b>[ {CODENAME} ] [ {TITLE} ]</b>' + '<br>' +
+    #                 f'날짜 : {DATE}' + '<br>' +
+    #                 f'장소 : {ORG_NAME} {PLACE}' + '<br>' +
+    #                 f'연령 : {USE_TRGT}' + '<br>' +
+    #                 f'요금 : {USE_FEE}' + '<br>' + '<br>' +
+    #                 f'<a href="{ORG_LINK}" target = "_blank"><img src="{MAIN_IMG}" /></a>'
+    #         }
 
-    # print(text['text'])
+    text = {'text': f'<b>[ {CODENAME} ] [ {TITLE} ]</b>' + '<br>' +
+                    f'날짜 : {DATE}' + '<br>' +
+                    f'장소 : {ORG_NAME} {PLACE}' + '<br>' +
+                    f'연령 : {USE_TRGT}' + '<br>' +
+                    f'요금 : {USE_FEE}' + '<br>' + '<br>' +
+                    f'<a href="{ORG_LINK}" target = "_blank"><img src="{MAIN_IMG}" /></a>'
+            }
+    print(text['text'])
     return text['text']
