@@ -26,6 +26,9 @@ except:
     pass
 
 
+session = dict()
+
+
 @app.route("/", methods=["GET"])
 def home():
     return render_template("index.html")
@@ -60,20 +63,53 @@ def post_browser():
     """
     브라우저 입력을 처리하는 함수
     """
+    global session
+
     message = request.form["input"]
     logger.warning(f"recv from browser: {message}")
 
     # chatting을 실행한다.
     client_id, message_id, intent, data = do_chabot(None, None, message)
 
+    uuid = request.form["uuid"]
+    start = 0
+    session[uuid] = {"intent": intent, "start": start}
+
     intent_val = intent.get('INTENT')
-    print(intent)
     if intent_val == "인사말":
         text = "반갑습니다. 저는 해치 입니다. 부족하지만 많이 사용해 주세요."
     elif intent_val == '검색':
         # text = browser.make_output(data)
         if 0 < len(data):
-            text = browser.make_list(data, start=10)
+            text = browser.make_list(data, start=start)
+            # text = browser.make_detail(data)
+        else:
+            text = "죄송해요 정보를 찾을 수 업네요. 아직은 저에게는 너무 어려운 질문 입니다."
+    else:
+        text = "죄송해요 아직 제가 부족해서 잘 못알아 들었어요. 조금만 기다려 주시면 더 똑똑해 질 거에요."
+
+    return jsonify({"output": text})
+
+
+@app.route("/browser/<id>", methods=["POST"])
+def post_browser_id(id):
+    global session
+
+    uuid = request.form["uuid"]
+    value = session.get(uuid)
+    intent = value.get("intent", {}) if value else {}
+    start = value.get("start", 0) if value else 0
+
+    # chatting을 실행한다.
+    data = database.get_cultural_event(intent)
+
+    intent_val = intent.get('INTENT')
+    print(intent, start, intent_val)
+    if intent_val == "인사말":
+        text = "반갑습니다. 저는 해치 입니다. 부족하지만 많이 사용해 주세요."
+    elif intent_val == '검색':
+        if 0 < len(data):
+            text = browser.make_list_item(data, id, start=start)
             # text = browser.make_detail(data)
         else:
             text = "죄송해요 정보를 찾을 수 업네요. 아직은 저에게는 너무 어려운 질문 입니다."
