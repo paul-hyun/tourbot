@@ -10,24 +10,20 @@ import requests
 from flask import Flask, request, Response, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
+
+DB_URL = "postgresql://tourbot:tourbot@127.0.0.1:5432/tourbot"
+# DB_URL = "mysql+pymysql://tourbot:tourbot123!@officelog.net/tourbot"
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = DB_URL
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+db = SQLAlchemy(app)
+
+
 import database
 import telegram
 import browser
 
-try:
-    import MeCab
-    mecab = MeCab.Tagger('-d /home/chatbot/anaconda3/envs/chatbot/lib/mecab/dic/mecab-ko-dic')
-except:
-    pass
 
-
-app = Flask(__name__)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://tourbot:tourbot123!@localhost/tourbot"
-database.db.init_app(app)
-# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-# app.config['SQLALCHEMY_POOL_RECYCLE'] = 280
-# db = SQLAlchemy(app)
 storage = dict()
 
 
@@ -152,37 +148,6 @@ def post_browser_start(start):
     return jsonify({"output": text})
 
 
-@app.route("/mecab", methods=["POST"])
-def post_mecab():
-    """
-    mecab 형태소 분석
-    """
-    message = request.get_json()["input"]
-    logger.warning(f"recv from mecab: {message}")
-
-    morp = []
-    node = mecab.parseToNode(message)
-    while node:
-        feature = node.feature.split(",")
-        if feature[0] == "BOS/EOS":
-            pass
-        elif "+" not in feature[0]:
-            value = dict()
-            value[node.surface] = feature[0]
-            morp.append(value)
-        else:
-            subs = feature[-1].split("+")
-            for sub in subs:
-                tokens = sub.split("/")
-                value = dict()
-                value[tokens[0]] = tokens[1]
-                morp.append(value)
-            pass
-        node = node.next
-
-    return jsonify({"output": morp})
-
-
 def do_chabot(client_id, message_id, text):
     # entri api를 이용하여 entity를 조회 한다.
     dep, ner, morp, mecab = get_entity(text)
@@ -201,16 +166,19 @@ def do_chabot(client_id, message_id, text):
 
 
 if __name__ == "__main__":
+    if not os.path.exists("../log"):
+        os.makedirs("../log")
+
     logger.setLevel(logging.INFO)
 
-    # log_handler = handlers.TimedRotatingFileHandler(filename="../log/tourbot.log", when="midnight", interval=1, encoding="utf-8")
-    # log_handler.suffix = "%Y%m%d"
-    # log_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)8s | %(message)s"))
-    # logger.addHandler(log_handler)
+    log_handler = handlers.TimedRotatingFileHandler(filename="../log/tourbot.log", when="midnight", interval=1, encoding="utf-8")
+    log_handler.suffix = "%Y%m%d"
+    log_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)8s | %(message)s"))
+    logger.addHandler(log_handler)
 
-    # logging.getLogger("werkzeug").setLevel(logging.WARNING)
-    # logging.getLogger("urllib3").setLevel(logging.WARNING)
-    # logging.getLogger("requests").setLevel(logging.WARNING)
+    logging.getLogger("werkzeug").setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("requests").setLevel(logging.WARNING)
 
     app.jinja_env.auto_reload = True
     app.config["TEMPLATES_AUTO_RELOAD"] = True

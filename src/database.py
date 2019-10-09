@@ -1,8 +1,7 @@
 from datetime import datetime
 from sqlalchemy import and_
-from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+from server import db
 
 
 class CulInfo(db.Model):

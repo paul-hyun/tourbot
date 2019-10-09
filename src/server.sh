@@ -6,9 +6,9 @@
 KILL_CMD=`which kill`
 TAIL_CMD=`which tail`
 
-APP_HOME=/home/chatbot/tourbot/src
+APP_HOME=/data/tourbot/src
 
-SERVICE_NAME='TourBot Again'
+SERVICE_NAME='TourBot'
 
 USER_DIR=`pwd`
 
@@ -38,7 +38,7 @@ case "$1" in
         then
                 echo "     >> Starting $SERVICE_NAME process ..."
 		cd $APP_HOME
-		nohup /home/chatbot/anaconda3/envs/chatbot/bin/python server.py &
+		nohup /home/ubuntu/anaconda3/envs/chatbot/bin/python server.py &
 		echo $! > .pid
                 sleep 5
 

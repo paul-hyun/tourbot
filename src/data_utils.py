@@ -1,9 +1,11 @@
 import os, sys, logging, json, urllib3, re
 logger = logging.getLogger()
 
+import MeCab
+mecab = MeCab.Tagger('-d /usr/local/lib/mecab/dic/mecab-ko-dic')
+
 URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
-# ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
-ACCESSKEY = "3fe04c0d-8a4c-45ff-a0b9-b3f84eb4a07a"
+ACCESSKEY = "need_key_of_etri"
 
 def chk_entities(data):
     req_labels = []
@@ -46,6 +48,33 @@ def parse_dep(data):
                 dep_set[label] = [text]
     
     return dep_set
+
+
+def parse_mecab(text):
+    """
+    mecab 형태소 분석
+    """
+    morp = []
+    node = mecab.parseToNode(text)
+    while node:
+        feature = node.feature.split(",")
+        if feature[0] == "BOS/EOS":
+            pass
+        elif "+" not in feature[0]:
+            value = dict()
+            value[node.surface] = feature[0]
+            morp.append(value)
+        else:
+            subs = feature[-1].split("+")
+            for sub in subs:
+                tokens = sub.split("/")
+                value = dict()
+                value[tokens[0]] = tokens[1]
+                morp.append(value)
+            pass
+        node = node.next
+
+    return morp
     
 
 def get_entity(text):
@@ -75,17 +104,8 @@ def get_entity(text):
     ner = data["return_object"]["sentence"][0]["NE"]
     morp = data["return_object"]["sentence"][0]["morp"]
 
-    response = http.request(
-        "POST",
-        "https://www.officelog.net/mecab",
-        headers={
-            "Content-Type":"application/json; charset=UTF-8"}, 
-        body = json.dumps({"input": text})
-        )
-    mmm = json.loads(response.data.decode("utf-8"))["output"]
-    # mmm = str(json.loads(response.data.decode("utf-8"))["output"])
+    mmm = parse_mecab(text)
     
-    # return dict(dep, **ner)
     return dep, ner, morp, mmm
 
 
