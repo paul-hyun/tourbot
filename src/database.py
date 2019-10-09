@@ -27,3 +27,11 @@ class SeoulCulturalEventInfo(db.Model):
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False)
 
+
+def get_cultural_event(intent):
+    """
+    DB에서 관련 정보 조회
+    """
+    
+    return intent
+

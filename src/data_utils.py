@@ -83,8 +83,6 @@ def get_entity(text):
         )
     mmm = json.loads(response.data.decode("utf-8"))["output"]
     # mmm = str(json.loads(response.data.decode("utf-8"))["output"])
-    print(mmm)
-    # mmm = []
     
     # return dict(dep, **ner)
     return dep, ner, morp, mmm

@@ -16,15 +16,13 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://tourbot:tourbot123!@loc
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db = SQLAlchemy(app)
 import database
+import telegram
 
 try:
     import MeCab
     mecab = MeCab.Tagger('-d /home/chatbot/anaconda3/envs/chatbot/lib/mecab/dic/mecab-ko-dic')
 except:
     pass
-
-
-API_KEY = "962492515:AAHrWqRx5lNl4t1oYGLg21-_ndpXnpG-tC8"
 
 
 @app.route("/", methods=["GET"])
@@ -42,13 +40,15 @@ def post_telegram():
 
     # parse_message 함수는 두가지 return 값을 가진다 (chat_id, text의)
     # 순서대로 chat_id, text의 변수로 받아준다.
-    chat_id, text = parse_telegram(message)
+    chat_id, text = telegram.parse_input(message)
 
     # chatting을 실행한다.
-    client_id, message_id, text = do_chabot(chat_id, None, text)
+    client_id, message_id, data = do_chabot(chat_id, None, text)
+
+    text = telegram.make_output(data)
 
     # send_message 함수에 두가지 변수를 전달
-    send_telegram(chat_id, text)
+    telegram.send_output(chat_id, text)
 
     # 여기까지 오류가 없으면 서버상태 200 으로 반응
     return Response("Ok", status=200)
@@ -63,9 +63,9 @@ def post_browser():
     logger.warning(f"recv from browser: {message}")
 
     # chatting을 실행한다.
-    client_id, message_id, text = do_chabot(None, None, message)
+    client_id, message_id, data = do_chabot(None, None, message)
 
-    return jsonify({"output": text})
+    return jsonify({"output": data})
 
 
 @app.route("/mecab", methods=["POST"])
@@ -99,37 +99,6 @@ def post_mecab():
     return jsonify({"output": morp})
 
 
-def parse_telegram(message):
-    """
-    telegram 에서 data 인자를 받아옴
-    data 내부 구조를 이해해야 한다.
-    Retuen :
-    chat_id : 사용자 아이디 코드
-    text : 사용자 대화 내용
-    """
-    chat_id = message["message"]["chat"]["id"]
-    text = message["message"]["text"]
-
-    return chat_id, text
-
-
-def send_telegram(chat_id, text):
-    """
-    chat_id : 사용자 아이디 코드
-    text : 사용자에게 보낼 메시지
-    사용자에게 메세지를 보내는 내용의 함수
-    """
-    url = "https://api.telegram.org/bot{token}/sendMessage".format(token=API_KEY)
-    # 변수들을 딕셔너리 형식으로 묶음
-    params = {"chat_id": chat_id, "text": text}
-
-    # Url 에 params 를 json 형식으로 변환하여 전송
-    # 메세지를 전송하는 부분
-    logger.warning(f"send to telegram: {params}")
-    response = requests.post(url, json=params)
-    return response
-
-
 def do_chabot(client_id, message_id, text):
     # entri api를 이용하여 entity를 조회 한다.
     dep, ner, morp, mecab = get_entity(text)
@@ -138,26 +107,13 @@ def do_chabot(client_id, message_id, text):
     logger.warning(f"recv from etri_morp: {morp}")
     logger.warning(f"recv from mecab: {mecab}")
 
-    send_str = StringIO()
-    data = dict()
-    for elm in dep:
-        data[elm["label"]] = elm["text"]
-    send_str.write(f"dep: {data}")
-    data.clear()
-    for elm in ner:
-        data[elm["type"]] = elm["text"]
-    send_str.write(f"\nner: {data}")
-    data.clear()
-    for elm in morp:
-        data[elm["type"]] = elm["lemma"]
-    send_str.write(f"\nmorp: {data}")
-    send_str.write(f"\nmecab: {mecab}")
-    data.clear()
-
     # entity를 이용해 intent 및 entity를 확정 한다.
-    get_intent(dep, ner, morp, mecab)
+    intent = get_intent(dep, ner, morp, mecab)
 
-    return client_id, message_id, send_str.getvalue()
+    # intent를 db를 조회한다
+    output = database.get_cultural_event(intent)
+
+    return client_id, message_id, output
 
 
 if __name__ == "__main__":
