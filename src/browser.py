@@ -7,6 +7,10 @@ def make_list(data, start=0):
     text = ""
     for item in data[start:start+5]:
         text += f'<p><a href="#" onclick="list_click({item.id})"><b>[ {item.CODENAME} ] [ {item.TITLE} ]</b></a></p>'
+
+    text += f'<input type="button" value="이전" onclick="page_click()" />' + '&nbsp'*5
+    text += f'<input type="button" value="다음" onclick="page_click()" />'
+
     return text
 
 
@@ -19,11 +23,15 @@ def make_list_item(data, id, start=0):
                     f'장소 : {item.ORG_NAME} {item.PLACE}' + '<br>' +
                     f'연령 : {item.USE_TRGT}' + '<br>' +
                     f'요금 : {item.USE_FEE}' + '<br>' + '<br>' +
-                    f'<a href="{item.ORG_LINK}" target = "_blank"><img src="{item.MAIN_IMG}" style="max-height: 360px; max-width: 360px; object-fit: contain" /></a>'
+                    f'<a href="{item.ORG_LINK}" target = "_blank"><img src="{item.MAIN_IMG}" style="max-height: 360px; max-width: 360px; object-fit: contain" /></a>' + '<br>'
             }
             text += aaa["text"]
         else:
             text += f'<p><a href="#" onclick="list_click({item.id})"><b>[ {item.CODENAME} ] [ {item.TITLE} ]</b></a></p>'
+
+    text += f'<input type="button" value="이전" onclick="page_click({max(0,start-5)})" />' + '&nbsp'*5
+    text += f'<input type="button" value="다음" onclick="page_click({min(len(data),start+5)})" />'
+
     return text
 
 
