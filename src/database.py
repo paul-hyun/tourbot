@@ -47,6 +47,11 @@ def get_cultural_event(intent):
     #     for i in range(5):
     #         rtn_instance = instance[i]
 
-    rtn_instance = SeoulCulturalEventInfo.query.all()
-    return rtn_instance[:5]
+    instances = SeoulCulturalEventInfo.query.all()
+
+    if intent['INTENT'] == '검색':
+        tmp = SeoulCulturalEventInfo.query.filter_by(CODENAME=intent['분류1']).all()
+
+    return tmp
+
 
