@@ -49,8 +49,9 @@ def get_cultural_event(intent):
 
     instances = SeoulCulturalEventInfo.query.all()
 
-    if intent['INTENT'] == '검색':
-        tmp = SeoulCulturalEventInfo.query.filter_by(CODENAME=intent['분류1']).all()
+    tmp = []
+    if intent.get('INTENT') == '검색':
+        tmp = SeoulCulturalEventInfo.query.filter_by(CODENAME=intent.get('분류1')).all()
 
     return tmp
 
