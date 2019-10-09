@@ -10,11 +10,6 @@ import requests
 from flask import Flask, request, Response, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://tourbot:tourbot123!@officelog.net/tourbot"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-db = SQLAlchemy(app)
 import database
 import telegram
 import browser
@@ -26,7 +21,14 @@ except:
     pass
 
 
-session = dict()
+app = Flask(__name__)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://tourbot:tourbot123!@localhost/tourbot"
+database.db.init_app(app)
+# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+# app.config['SQLALCHEMY_POOL_RECYCLE'] = 280
+# db = SQLAlchemy(app)
+storage = dict()
 
 
 @app.route("/", methods=["GET"])
@@ -63,7 +65,7 @@ def post_browser():
     """
     브라우저 입력을 처리하는 함수
     """
-    global session
+    global storage
 
     message = request.form["input"]
     logger.warning(f"recv from browser: {message}")
@@ -73,7 +75,7 @@ def post_browser():
 
     uuid = request.form["uuid"]
     start = 0
-    session[uuid] = {"intent": intent, "start": start}
+    storage[uuid] = {"intent": intent, "start": start}
 
     intent_val = intent.get('INTENT')
     if intent_val == "인사말":
@@ -94,10 +96,10 @@ def post_browser():
 
 @app.route("/browser/<id>", methods=["POST"])
 def post_browser_id(id):
-    global session
+    global storage
 
     uuid = request.form["uuid"]
-    value = session.get(uuid)
+    value = storage.get(uuid)
     intent = value.get("intent", {}) if value else {}
     start = value.get("start", 0) if value else 0
 
@@ -122,18 +124,18 @@ def post_browser_id(id):
 
 @app.route("/browser_start/<start>", methods=["POST"])
 def post_browser_start(start):
-    global session
+    global storage
     start = int(start)
 
     uuid = request.form["uuid"]
-    value = session.get(uuid)
+    value = storage.get(uuid)
     intent = value.get("intent", {}) if value else {}
 
     # chatting을 실행한다.
     data = database.get_cultural_event(intent)
 
     uuid = request.form["uuid"]
-    session[uuid] = {"intent": intent, "start": start}
+    storage[uuid] = {"intent": intent, "start": start}
 
     intent_val = intent.get('INTENT')
     print(intent, start, intent_val)
