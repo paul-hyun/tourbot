@@ -119,14 +119,14 @@ def do_chabot(client_id, message_id, text):
 if __name__ == "__main__":
     logger.setLevel(logging.INFO)
 
-    log_handler = handlers.TimedRotatingFileHandler(filename="../log/tourbot.log", when="midnight", interval=1, encoding="utf-8")
-    log_handler.suffix = "%Y%m%d"
-    log_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)8s | %(message)s"))
-    logger.addHandler(log_handler)
+    # log_handler = handlers.TimedRotatingFileHandler(filename="../log/tourbot.log", when="midnight", interval=1, encoding="utf-8")
+    # log_handler.suffix = "%Y%m%d"
+    # log_handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)8s | %(message)s"))
+    # logger.addHandler(log_handler)
 
-    logging.getLogger("werkzeug").setLevel(logging.WARNING)
-    logging.getLogger("urllib3").setLevel(logging.WARNING)
-    logging.getLogger("requests").setLevel(logging.WARNING)
+    # logging.getLogger("werkzeug").setLevel(logging.WARNING)
+    # logging.getLogger("urllib3").setLevel(logging.WARNING)
+    # logging.getLogger("requests").setLevel(logging.WARNING)
 
     app.jinja_env.auto_reload = True
     app.config["TEMPLATES_AUTO_RELOAD"] = True

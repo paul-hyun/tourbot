@@ -1,5 +1,8 @@
 from server import db
 from datetime import datetime
+# from sqlalchemy import create_engine
+# from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.orm import sessionmaker
 
 
 class SeoulCulturalEventInfo(db.Model):
@@ -32,6 +35,18 @@ def get_cultural_event(intent):
     """
     DB에서 관련 정보 조회
     """
-    
-    return intent
+    '''
+    [('INTENT', '검색'), ('DT_DAY', '내일'), ('LCP_COUNTY', '강남구'), 
+    ('FD_ART', '판소리')]    '''
+    # engine = create_engine(db, echo=True)
+    # session = sessionmaker(bind=engine)
+    # Base = declarative_base()
+    # # 날짜, 지역, 종류, 장소
+
+    # for instance in session.query(info):
+    #     for i in range(5):
+    #         rtn_instance = instance[i]
+
+    rtn_instance = SeoulCulturalEventInfo.query.all()
+    return rtn_instance[:5]
 

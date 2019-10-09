@@ -41,4 +41,4 @@ def make_output(data):
     """
     텔레그렘에 보낼 메시지 생성
     """
-    return str(list(data.items()))
+    return str(data)
