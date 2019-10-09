@@ -29,12 +29,29 @@ def make_output(data):
     #                 f'<a href="{ORG_LINK}" target = "_blank"><img src="{MAIN_IMG}" /></a>'
     #         }
 
-    text = {'text': f'<b>[ {CODENAME} ] [ {TITLE} ]</b>' + '<br>' +
-                    f'날짜 : {DATE}' + '<br>' +
-                    f'장소 : {ORG_NAME} {PLACE}' + '<br>' +
-                    f'연령 : {USE_TRGT}' + '<br>' +
-                    f'요금 : {USE_FEE}' + '<br>' + '<br>' +
-                    f'<a href="{ORG_LINK}" target = "_blank"><img src="{MAIN_IMG}" /></a>'
+    text = {'text': '<html>' +
+                    '<body>' +
+                    f'<p id="title" onclick="myFunc1()"><b>[ {CODENAME} ] [ {TITLE} ]</b></p>'
+                    f'<b>[ {CODENAME} ] [ {TITLE} ]</b>' + '<br>' +
+                    f'<b>[ {CODENAME} ] [ {TITLE} ]</b>' + '<br>' +
+                    f'<b>[ {CODENAME} ] [ {TITLE} ]</b>' + '<br>' +
+                    f'<b>[ {CODENAME} ] [ {TITLE} ]</b>' + '<br>' +
+                    '<button onclick="myFunc2()">btn1</button>' + '<br>'
+                    '<button onclick="myFunc3()">btn2</button>' +
+                    '<script>' +
+                    'function myFunc1() {' +
+                    '   // todo' +
+                    '}' +
+                    '<function myFunc2() {' +
+                    '   // todo' +
+                    '}' +
+                    '<function myFunc3() {' +
+                    '   // todo' +
+                    '}' +
+                    '</script>' +
+                    '</body>' +
+                    '</html>'
             }
+
     print(text['text'])
     return text['text']
