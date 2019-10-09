@@ -17,6 +17,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db = SQLAlchemy(app)
 import database
 import telegram
+import browser
 
 try:
     import MeCab
@@ -48,7 +49,7 @@ def post_telegram():
     text = telegram.make_output(data)
 
     # send_message 함수에 두가지 변수를 전달
-    telegram.send_output(chat_id, text)
+    telegram.send_output(chat_id, str(list(intent.items())))
 
     # 여기까지 오류가 없으면 서버상태 200 으로 반응
     return Response("Ok", status=200)
@@ -65,7 +66,9 @@ def post_browser():
     # chatting을 실행한다.
     client_id, message_id, intent, data = do_chabot(None, None, message)
 
-    return jsonify({"output": str(list(intent.items()))})
+    text = browser.make_output(data)
+
+    return jsonify({"output": text})
 
 
 @app.route("/mecab", methods=["POST"])

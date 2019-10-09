@@ -8,7 +8,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Chatbot</title>
+		<title>해치에게 물어보세요</title>
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -256,7 +256,7 @@
                     do_chat();
                 });
 
-                append_chatbot('안녕하세요. 저는 \'Chatbot\' 입니다. 무엇을 도와 드릴까요?');
+                append_chatbot('안녕하세요. 저는 \'해치\' 입니다. 무엇을 도와 드릴까요?');
             });
 
             function do_chat() {
@@ -276,7 +276,7 @@
             }
 
             function append_chatbot(input) {
-                $('#chat_history').append('<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="/static/img/person-chatbot.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + input + '<span class="msg_time">' + get_timestamp() + '</span></div></div>');
+                $('#chat_history').append('<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="/static/img/HACHI2.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + input + '<span class="msg_time">' + get_timestamp() + '</span></div></div>');
                 $("#chat_history").scrollTop($("#chat_history")[0].scrollHeight);
             }
 
@@ -310,7 +310,7 @@
                         <div class="card-header msg_head">
                             <div class="d-flex bd-highlight">
                                 <div class="user_info">
-                                    <span>Chat with Chatbot</span>
+                                    <span>해치에게 물어보세요</span>
                                     <!-- <p>1767 Messages</p> -->
                                 </div>
                             </div>
