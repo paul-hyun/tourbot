@@ -32,5 +32,5 @@ def make_output(data):
                     f'<a href="{ORG_LINK}">사이트</a>' + '\n' +
                     f'<a href="{MAIN_IMG}">Download</a>'}
 
-    print(text['text'])
+    # print(text['text'])
     return text['text']
