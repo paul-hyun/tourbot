@@ -38,28 +38,6 @@ def init_all():
         db.session.add(info)
         db.session.flush()
     db.session.commit()
-    
-def get_cultural_event(intent):
-    """
-    DB에서 관련 정보 조회    """
-    '''
-    [('INTENT', '검색'), ('DT_DAY', '내일'), ('LCP_COUNTY', '강남구'), 
-    ('FD_ART', '판소리')]    '''
-    db_id = 'mysql+pymysql://tourbot:tourbot123!@localhost/tourbot'
-    engine = create_engine(db_id, echo=True)
-    session = sessionmaker(bind=engine)
-    Base = declarative_base()
-    # 날짜, 지역, 종류, 장소
-
-    for instance in session.query(info):
-        for i in range(5):
-            rtn_instance = instance[i]
-    '''
-    for row in session.query(info, info.name).all():
-        print(row.User, row.name)    '''
-
-    return rtn_instance
-
 
 if __name__ == "__main__":
     init_all()
