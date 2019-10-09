@@ -299,6 +299,12 @@
                 })
             }
 
+            function page_click(start) {
+                $.post("/browser_start/" + start, {"uuid": uuid}, function(data) {
+                    append_chatbot(data["output"]);
+                })
+            }
+
             function append_user(input) {
                 $('#chat_history').append('<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + input + '<span class="msg_time_send">' + get_timestamp() + '</span></div><div class="img_cont_msg"><img src="/static/img/person-user.png" class="rounded-circle user_img_msg"></div></div>');
                 $("#chat_history").scrollTop($("#chat_history")[0].scrollHeight);

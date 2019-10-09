@@ -8,8 +8,10 @@ def make_list(data, start=0):
     for item in data[start:start+5]:
         text += f'<p><a href="#" onclick="list_click({item.id})"><b>[ {item.CODENAME} ] [ {item.TITLE} ]</b></a></p>'
 
-    text += f'<input type="button" value="이전" onclick="page_click()" />' + '&nbsp'*5
-    text += f'<input type="button" value="다음" onclick="page_click()" />'
+    if 0 < start:
+        text += f'<input type="image" src="/static/img/prev.png" style="width:16px;height:16px;" onclick="page_click({max(0,start-5)})" /> 이전보기' + '&nbsp'*5
+    if start + 5 < len(data):
+        text += f'다음보기 <input type="image" src="/static/img/next.png" style="width:16px;height:16px;" onclick="page_click({min(len(data),start+5)})" />'
 
     return text
 
@@ -29,8 +31,10 @@ def make_list_item(data, id, start=0):
         else:
             text += f'<p><a href="#" onclick="list_click({item.id})"><b>[ {item.CODENAME} ] [ {item.TITLE} ]</b></a></p>'
 
-    text += f'<input type="button" value="이전" onclick="page_click({max(0,start-5)})" />' + '&nbsp'*5
-    text += f'<input type="button" value="다음" onclick="page_click({min(len(data),start+5)})" />'
+    if 0 < start:
+        text += f'<input type="image" src="/static/img/prev.png" style="width:16px;height:16px;" onclick="page_click({max(0,start-5)})" /> 이전보기' + '&nbsp'*5
+    if start + 5 < len(data):
+        text += f'다음보기 <input type="image" src="/static/img/next.png" style="width:16px;height:16px;" onclick="page_click({min(len(data),start+5)})" />'
 
     return text
 

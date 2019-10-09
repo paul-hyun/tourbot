@@ -122,6 +122,7 @@ def post_browser_id(id):
 @app.route("/browser_start/<start>", methods=["POST"])
 def post_browser_start(start):
     global session
+    start = int(start)
 
     uuid = request.form["uuid"]
     value = session.get(uuid)
@@ -139,8 +140,7 @@ def post_browser_start(start):
         text = "반갑습니다. 저는 해치 입니다. 부족하지만 많이 사용해 주세요."
     elif intent_val == '검색':
         if 0 < len(data):
-            text = browser.make_list(data, id, start=start)
-            # text = browser.make_detail(data)
+            text = browser.make_list(data, start=start)
         else:
             text = "죄송해요 정보를 찾을 수 업네요. 아직은 저에게는 너무 어려운 질문 입니다."
     else:
