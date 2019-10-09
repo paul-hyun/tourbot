@@ -66,7 +66,14 @@ def post_browser():
     # chatting을 실행한다.
     client_id, message_id, intent, data = do_chabot(None, None, message)
 
-    text = browser.make_output(data)
+    intent_val = intent.get('INTENT')
+    print(intent)
+    if intent_val == "인사말":
+        text = "반갑습니다. 저는 해치 입니다. 부족하지만 많이 사용해 주세요."
+    elif intent_val == '검색':
+        text = browser.make_output(data)
+    else:
+        text = "죄송해요 아직 제가 부족해서 잘 못알아 들었어요. 더 노력 할께요."
 
     return jsonify({"output": text})
 

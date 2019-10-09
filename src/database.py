@@ -5,7 +5,7 @@ from datetime import datetime
 # from sqlalchemy.orm import sessionmaker
 
 
-class SeoulCulturalEventInfo(db.Model):
+class CulInfo(db.Model):
     __tablename__ = 'seoul_cultural_event_info'
     __table_args__ = {'mysql_collate': 'utf8_general_ci', 'extend_existing': True}
 
@@ -47,12 +47,13 @@ def get_cultural_event(intent):
     #     for i in range(5):
     #         rtn_instance = instance[i]
 
-    instances = SeoulCulturalEventInfo.query.all()
-
     tmp = []
     if intent.get('INTENT') == '검색':
-        tmp = SeoulCulturalEventInfo.query.filter_by(CODENAME=intent.get('분류1')).all()
-
-    return tmp
+        if intent.get('분류1'):
+            cat1 = intent.get('분류1')
+            tmp = CulInfo.query.filter(CulInfo.CODENAME.like(f"%{cat1}%")).all()
+        else:
+            tmp = CulInfo.query.all()
+    return tmp[:5]
 
 
