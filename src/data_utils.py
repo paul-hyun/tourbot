@@ -2,7 +2,8 @@ import os, sys, logging, json, urllib3, re
 logger = logging.getLogger()
 
 URL = "http://aiopen.etri.re.kr:8000/WiseNLU"
-ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
+# ACCESSKEY = "4ee51c5e-7d13-4f91-9516-5f68c4fe26f3"
+ACCESSKEY = "3fe04c0d-8a4c-45ff-a0b9-b3f84eb4a07a"
 
 def chk_entities(data):
     req_labels = []
