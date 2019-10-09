@@ -71,9 +71,14 @@ def post_browser():
     if intent_val == "인사말":
         text = "반갑습니다. 저는 해치 입니다. 부족하지만 많이 사용해 주세요."
     elif intent_val == '검색':
-        text = browser.make_output(data)
+        # text = browser.make_output(data)
+        if 0 < len(data):
+            text = browser.make_list(data, start=10)
+            # text = browser.make_detail(data)
+        else:
+            text = "죄송해요 정보를 찾을 수 업네요. 아직은 저에게는 너무 어려운 질문 입니다."
     else:
-        text = "죄송해요 아직 제가 부족해서 잘 못알아 들었어요. 더 노력 할께요."
+        text = "죄송해요 아직 제가 부족해서 잘 못알아 들었어요. 조금만 기다려 주시면 더 똑똑해 질 거에요."
 
     return jsonify({"output": text})
 

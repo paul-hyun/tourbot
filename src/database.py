@@ -54,6 +54,6 @@ def get_cultural_event(intent):
             tmp = CulInfo.query.filter(CulInfo.CODENAME.like(f"%{cat1}%")).all()
         else:
             tmp = CulInfo.query.all()
-    return tmp[:5]
+    return tmp
 
 
