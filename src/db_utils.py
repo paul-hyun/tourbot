@@ -15,7 +15,7 @@ def init_all():
     response = http.request("GET", "http://openapi.seoul.go.kr:8088/4f46587844616c733435657053446a/json/culturalEventInfo/0/999/")
     data = json.loads(response.data.decode("utf-8"))
     for row in data["culturalEventInfo"]["row"]:
-        info = database.SeoulCulturalEventInfo()
+        info = database.CulInfo()
         info.CODENAME = row["CODENAME"]
         info.TITLE = row["TITLE"]
         info.DATE = row["DATE"]
