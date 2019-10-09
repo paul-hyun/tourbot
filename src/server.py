@@ -12,7 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://tourbot:tourbot123!@localhost/tourbot"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://tourbot:tourbot123!@officelog.net/tourbot"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db = SQLAlchemy(app)
 import database
@@ -43,7 +43,7 @@ def post_telegram():
     chat_id, text = telegram.parse_input(message)
 
     # chatting을 실행한다.
-    client_id, message_id, data = do_chabot(chat_id, None, text)
+    client_id, message_id, intent, data = do_chabot(chat_id, None, text)
 
     text = telegram.make_output(data)
 
@@ -63,9 +63,9 @@ def post_browser():
     logger.warning(f"recv from browser: {message}")
 
     # chatting을 실행한다.
-    client_id, message_id, data = do_chabot(None, None, message)
+    client_id, message_id, intent, data = do_chabot(None, None, message)
 
-    return jsonify({"output": data})
+    return jsonify({"output": str(list(intent.items()))})
 
 
 @app.route("/mecab", methods=["POST"])
@@ -113,7 +113,7 @@ def do_chabot(client_id, message_id, text):
     # intent를 db를 조회한다
     output = database.get_cultural_event(intent)
 
-    return client_id, message_id, output
+    return client_id, message_id, intent, output
 
 
 if __name__ == "__main__":
